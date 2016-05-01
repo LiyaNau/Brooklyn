@@ -1,0 +1,801 @@
+Brooklyn real estate sales analysis by Liya Naumova
+========================================================
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, packages}
+
+library(ggplot2)
+library(openxlsx)
+library(gdata)
+library(dplyr)
+library(stats)
+
+```
+
+```{r echo=FALSE, Load_the_Data}
+sales <- read.xlsx("rollingsales_brooklyn.xlsx", sheet = 1, startRow = 5, detectDates = TRUE)
+
+colnames(sales) <- tolower(colnames(sales))
+
+sales$neighborhood <- as.factor(sales$neighborhood)
+sales$building.class.category <- as.factor(sales$building.class.category)
+
+sales[sales$tax.class.at.present =='  ', ]$tax.class.at.present <- NA
+sales$tax.class.at.present <- as.factor(sales$tax.class.at.present)
+
+
+sales[sales$building.class.at.present =='  ', ]$building.class.at.present <- NA 
+sales$building.class.at.present <- as.factor(sales$building.class.at.present)
+
+sales[sales$apartment.number == "            ", ]$apartment.number <-NA
+
+sales[sales$zip.code == 0,11] <-NA
+
+sales[!is.na(sales$year.built) & sales$year.built == 1380,17] <- NA
+sales[!is.na(sales$year.built) & sales$year.built == 1050,17] <- NA
+sales[!is.na(sales$year.built) & sales$year.built == 0, 17] <- NA
+
+sales$tax.class.at.time.of.sale <- as.factor(sales$tax.class.at.time.of.sale)
+sales$building.class.at.time.of.sale <- as.factor(sales$building.class.at.time.of.sale)
+
+sales$neighborhood <- trim(sales$neighborhood)
+sales$building.class.category <- trim(sales$building.class.category)
+sales$address <- trim(sales$address)
+sales$apartment.number <- trim(sales$apartment.number)
+```
+I've chosen data about Brooklyn real estate sales in 2015. It consist of more than 23 000  observations of 21 variables.
+```{r echo=FALSE}
+str(sales)
+head(sales)
+
+```
+
+
+# Univariate Plots Section
+#### Price
+At first I decided to look at price distribution
+
+```{r echo=FALSE, price_summary}
+summary(sales$sale.price)
+
+```
+It looks like we have zero values for about a quarter of rows and now I want to look at lowest values
+
+```{r echo=FALSE, price_table}
+
+head(table(sales$sale.price))
+
+```
+Then I exclude zeros and repeat summary
+```{r echo=FALSE}
+nonzero_prices <- subset(sales, sale.price > 0)
+summary(nonzero_prices$sale.price)
+```
+
+Now I'm interested in those $1 properties
+
+```{r echo=FALSE}
+one_dollar_sale <- sales %>%
+  filter(sale.price == 1) %>%
+  select(building.class.category,address, year.built, gross.square.feet, sale.price)
+head(one_dollar_sale,10)
+```
+Other values look normal so I assume it's a kind of fictitious price
+
+Let's look at histogram with prices divided by 1000
+
+```{r echo=FALSE}
+ggplot(sales, aes(sale.price/1000)) +
+  geom_histogram(binwidth = 1000)
+
+```
+
+So there is a distribution with very long tale.
+
+```{r echo=FALSE, Price_boxplot}
+
+
+```
+
+Let's look at all prices lower than 5 mln.
+
+```{r echo=FALSE}
+ggplot(sales, aes(sale.price/1000)) +
+  geom_histogram(binwidth = 50) +
+    xlim(0.001,5000)
+```
+
+Most prices are distributed between 1000 and 1 000 000  with peaks around 500 000, 950 000 and 1 250 000, also we have much more prices that are slightly lower then 1 mln than that are slightly higher.
+After log transformation prices look nearly normal but some exceptions that are lower than 1000.
+
+```{r echo=FALSE, Price}
+
+ggplot(sales, aes(x = sale.price/1000)) + 
+  geom_histogram(bins = 100) +
+#  xlim(0,200) + 
+  scale_x_log10()
+```
+
+#### Gross sqare feet
+
+Next feature of interest for me is Gross square feet.
+
+```{r echo=FALSE}
+summary(sales$gross.square.feet)
+
+```
+Looks like here are also lots of zeros. Summary without zeros:
+```{r echo=FALSE}
+summary(subset(sales, gross.square.feet > 0)$gross.square.feet)
+```
+
+
+Let's look at distribution of values greater than 0
+
+```{r echo=FALSE}
+ggplot(sales, aes(gross.square.feet)) +
+  geom_histogram(bins = 500) +
+  scale_x_continuous(limits = c(1, 366000))
+
+```
+
+Here also we have very long tail. I focus on values between 1 and 10000
+
+```{r echo=FALSE}
+
+ggplot(sales, aes(gross.square.feet)) +
+  geom_histogram(bins = 100) +
+  scale_x_continuous(limits = c(1, 10000), breaks = seq(0,10000,1000))
+
+```
+
+Most values are between 1000 and 3500 square feet and peak is around 2000.
+Now I want to look at it after log transformation.
+
+```{r echo=FALSE, gsf_log}
+
+ggplot(sales, aes(gross.square.feet)) +
+  geom_histogram(bins = 100) + 
+  scale_x_log10()
+
+```
+
+Now it looks more like normal but still with long tails.
+
+#### Land sqare feet
+
+Summary:
+```{r echo=FALSE}
+
+summary(sales$land.square.feet)
+```
+
+Looks like here we also have lots of zeros and outliers.
+
+Summary without zeros:
+
+```{r echo=FALSE}
+summary(subset(sales, land.square.feet > 0)$land.square.feet)
+
+```
+
+Histogram:
+```{r echo=FALSE}
+ggplot(sales, aes(land.square.feet)) +
+  geom_histogram(bins = 100) +
+  scale_x_continuous(limits = c(1, 25000))
+
+```
+
+And a closer look to values between 1 and 10000:
+
+```{r echo=FALSE}
+ggplot(sales, aes(land.square.feet)) +
+  geom_histogram(bins = 200) +
+  scale_x_continuous(limits = c(1, 10000), breaks = seq(0,10000,1000))
+
+```
+
+Most values are distributed between 1500 and 3000 with spikes at round numbers (2000, 2500, 3000 ...). The most common value is 2000.
+
+After log transformation:
+
+```{r echo=FALSE}
+ggplot(sales, aes(land.square.feet)) +
+  geom_histogram(bins = 100) + 
+  scale_x_log10()
+
+```
+
+I decided to make new variable "total.square.feet" as a sum of "land.square.feet" and "gross.square.feet".
+
+```{r echo=FALSE}
+sales <- mutate(sales, total.square.feet = land.square.feet + gross.square.feet)
+```
+
+#### Total square feet
+
+summary of new variable:
+
+```{r echo=FALSE}
+summary(sales$total.square.feet)
+```
+I still have `r sum(sales$total.square.feet == 0)` zero values.
+Summary of non-zero values:
+
+```{r echo=FALSE}
+summary(subset(sales, total.square.feet > 0)$total.square.feet)
+```
+
+```{r echo=FALSE}
+
+ggplot(sales, aes(total.square.feet)) + 
+  geom_histogram(bins = 100)
+
+```
+ 
+Obviously I have here similar distribution with very long tale.
+
+```{r  echo=FALSE}
+ggplot(sales, aes(total.square.feet)) + 
+  geom_histogram(bins = 100) + 
+  scale_x_continuous(limits = c(1,20000))
+``` 
+ 
+#### Price per square feet
+
+Then I want to make another variable - price per square foot
+
+```{r echo=FALSE}
+sales$price.square.foot <- 
+   ifelse(sales$total.square.feet > 0, round(sales$sale.price /sales$total.square.feet, 2), 0)
+```
+
+Summary of non-zero values:
+
+```{r echo=FALSE}
+summary(subset(sales, price.square.foot > 0)$price.square.foot)
+
+```
+
+distribution of :
+
+```{r echo=FALSE}
+ggplot(sales, aes(price.square.foot)) + 
+  geom_histogram(binwidth = 50) +
+  scale_x_continuous(limits = c(0, 12060))
+```
+
+distribution of non-zero values below 2000:
+
+```{r echo=FALSE}
+ggplot(sales, aes(price.square.foot)) + 
+  geom_histogram(binwidth = 10) +
+  scale_x_continuous(limits = c(0.01, 2000))
+```
+
+#### Year built
+
+Next feature of interest is year.built
+
+```{r echo=FALSE}
+summary(sales$year.built)
+```
+
+Its distribution:
+
+```{r echo=FALSE}
+ggplot(sales, aes(year.built)) +
+  geom_histogram(binwidth = 5) + 
+  scale_x_continuous(limits = c(1800,2020), breaks = seq(1800,2020,10))
+```
+
+Most buildings were built between 1895 and 1935 with other peaks in 1950 - 1956 and 2005-2015
+
+```{r echo=FALSE}
+ggplot(sales, aes(year.built)) +
+  geom_histogram(binwidth = 1) + 
+  scale_x_continuous(limits = c(1800,2020), breaks = seq(1800,2020,10))
+```
+
+With binwidth = 1 it is possible to notice spikes on round years (1900, 1920...). I assume some of these values are approximate. 
+
+#### Residential units
+
+Table of values' counts:
+
+```{r echo=FALSE}
+table(sales$residential.units)
+```
+
+Histogram:
+
+```{r echo=FALSE}
+ggplot(sales, aes(residential.units)) + 
+  geom_histogram(binwidth = 1)
+```
+
+```{r echo=FALSE}
+ggplot(sales, aes(residential.units)) + 
+  geom_histogram(binwidth = 1) + 
+  scale_x_continuous(limits = c(0,50))
+```
+
+Most properties have from 0 to 5 residential units.
+
+#### Commercial units
+
+```{r echo=FALSE}
+table(sales$commercial.units)
+```
+
+Histogram:
+
+```{r echo=FALSE}
+ggplot(sales, aes(commercial.units)) + 
+  geom_histogram(binwidth = 1)
+```
+
+```{r echo=FALSE}
+ggplot(sales, aes(commercial.units)) + 
+  geom_histogram(binwidth = 1) + 
+  scale_x_continuous(limits = c(0,20))
+```
+
+Most properties have 0 commercial units.
+
+#### Total units
+
+```{r echo=FALSE}
+table(sales$total.units)
+```
+
+Histogram:
+
+```{r echo=FALSE}
+ggplot(sales, aes(total.units)) + 
+  geom_histogram(binwidth = 1)
+```
+
+```{r echo=FALSE}
+ggplot(sales, aes(total.units)) + 
+  geom_histogram(binwidth = 1) + 
+  scale_x_continuous(limits = c(0,20))
+```
+
+Most properties have between 0 and 5 total units.
+
+### Categorical variables
+
+#### Borough
+
+```{r echo=FALSE}
+table(sales$borough)
+```
+All observarions of this variable have the same value
+
+#### Neighborhood
+Categorical variable with 60 levels
+
+```{r echo=FALSE,fig.height=8}
+ggplot(sales, aes(neighborhood)) + 
+  geom_bar() + coord_flip()
+```
+
+I've noticed that neighborhoods have different representation in the dataset. Some of them have small number of observations.
+
+#### Building class category
+
+Categorical with 44 levels.
+Ten most common values:
+
+```{r echo=FALSE}
+sort(table(sales$building.class.category), decreasing = TRUE)[1:10]
+
+```
+
+```{r echo=FALSE,fig.height=8}
+ggplot(sales, aes(building.class.category)) + 
+  geom_bar() + coord_flip()
+```
+
+Most properties are one-three family dwellings or condos.
+
+#### Tax class at present
+
+Categorical with 10 levels
+
+```{r echo=FALSE}
+table(sales$tax.class.at.present)
+```
+
+#### Block
+
+```{r echo=FALSE}
+sales$block <- as.factor(sales$block)
+```
+
+I transformed this to factor which has 5525 levels . Most frequent values are:
+
+```{r echo=FALSE}
+sort(table(sales$block), decreasing = TRUE) [1:10]
+```
+
+#### Lot
+
+
+```{r echo=FALSE}
+sales$lot <- as.factor(sales$lot)
+```
+
+I transformed it to factor too and received 1083 different values. Most frequent of them are:
+
+```{r echo=FALSE}
+sort(table(sales$lot), decreasing = TRUE) [1:10]
+```
+
+#### Easement
+
+```{r echo=FALSE}
+table(sales$`ease-ment`)
+```
+All observations have empty values.
+
+#### Building class at present
+
+Factor with 128 levels. Most common values:
+
+```{r echo=FALSE}
+sort(table(sales$building.class.at.present), decreasing = TRUE)[1:10]
+```
+
+All values:
+
+```{r echo=FALSE}
+table(sales$building.class.at.present)
+```
+
+#### Address and apartment number
+
+Character values that should represent uniqe buildings or apartments, I want to see if any of them repeat
+
+```{r echo=FALSE}
+sort(table(sales$address), decreasing = TRUE)[1:5]
+```
+
+#### ZIP code
+
+```{r echo=FALSE}
+sales$zip.code <- as.factor(sales$zip.code)
+```
+
+factor with 39 levels that can represent geographical location of building
+
+```{r echo=FALSE,fig.height=8}
+ggplot(sales, aes(zip.code)) + geom_bar() + coord_flip()
+```
+
+#### Tax class at time of sale
+
+Factor variable with 4 levels
+
+```{r echo= FALSE}
+table(sales$tax.class.at.time.of.sale)
+```
+ Most values are of class 1
+ 
+#### Building class at time of sale
+
+Factor variable with 132 levels. Most frequent:
+```{r echo=FALSE}
+sort(table(sales$building.class.at.time.of.sale), decreasing = TRUE)
+```
+
+### Sale date
+I should have sales for whole 2015 year. 
+
+```{r}
+ggplot(sales, aes(sale.date)) + geom_histogram(binwidth = 1)
+
+```
+
+Obviously most sales are made on week days with spike on June, 30 and decline to the end of year.
+
+
+
+
+# Univariate Analysis
+
+
+### What is the structure of your dataset?
+There are 23223 property sales with 23 variables in this dataset. 8157 rows don't have information about price. For others mean price is $1237000 and mean is $660000. Most properties are between 1000 and 3500 square feet and have between 1500 and 3000 square feet of land. Most buildings were constructed between 1895 and 1935.
+
+
+### What is/are the main feature(s) of interest in your dataset?
+Main features for me are price, gross square feet, land square feet.
+
+### What other features in the dataset do you think will help support your investigation into your feature(s) of interest?
+Other features that I find interesting are year built, numbber of units, sale date, zipcode.
+
+### Did you create any new variables from existing variables in the dataset?
+I created a variable "total square feet" for sum of gross and land square feet and a variable for price per square feet.
+
+### Of the features you investigated, were there any unusual distributions? Did you perform any operations on the data to tidy, adjust, or change the form of the data? If so, why did you do this?
+I've deleted zeros and obvious mistakes from "year.built", for plots I deleted price by 1000 and made logarithmic transformations for price and area variables because of long-tailed distributions. 
+
+
+# Bivariate Plots Section
+
+First I want to plot price vs gross square feet
+```{r echo=FALSE, Bivariate_Plots}
+ggplot(sales, aes(gross.square.feet, sale.price/1000)) +
+  geom_point(alpha = 0.1) +
+  scale_x_continuous(limits = c(0, 50000)) + 
+  scale_y_continuous(limits = c(0, 50000)) 
+```
+
+Filter out zero values and zoom in:
+
+```{r echo=FALSE}
+ggplot(sales, aes(gross.square.feet, sale.price/1000)) +
+  geom_point(alpha = 0.1) +
+  scale_x_continuous(limits = c(1, 10000)) + 
+  scale_y_continuous(limits = c(1, 10000)) + 
+  geom_smooth()
+
+```
+
+Here we can see some wertical bands for round numbers and a horizontal stripe around 1000000 and also a lot of variance in price for the same square feet.
+
+Now I want to make the same for land :
+
+```{r echo=FALSE}
+ggplot(sales, aes(land.square.feet, sale.price/1000)) +
+  geom_point(alpha = 0.1) +
+  scale_x_continuous(limits = c(0, 50000)) + 
+  scale_y_continuous(limits = c(0, 50000)) 
+
+
+```
+
+```{r echo=FALSE}
+ggplot(sales, aes(land.square.feet, sale.price/1000)) +
+  geom_point(alpha = 0.1) +
+  scale_x_continuous(limits = c(0, 10000)) + 
+  scale_y_continuous(limits = c(0, 10000)) 
+```
+
+Here also we can see strong vertical bands and a lot of differences in prices.
+And now price vs. total square feet
+
+```{r echo=FALSE}
+ggplot(sales, aes(total.square.feet, sale.price/1000)) +
+  geom_point(alpha = 0.1) +
+  scale_x_continuous(limits = c(0, 50000)) + 
+  scale_y_continuous(limits = c(0, 50000)) 
+
+
+```
+
+Now I filter out zero values and add linear regression line:
+
+```{r echo=FALSE}
+ggplot(sales, aes(total.square.feet, sale.price/1000)) +
+  geom_point(alpha = 0.1) +
+  scale_x_continuous(limits = c(1, 10000)) + 
+  scale_y_continuous(limits = c(1, 10000)) + 
+  geom_smooth(method = "lm")
+```
+
+As expected larger properties at average cost more, but there are also a lot of variance due to other variables.
+
+Corellation coefficient for total square feet and price:
+
+```{r echo=FALSE}
+cor = cor.test(sales$sale.price, sales$total.square.feet)
+cor$estimate
+```
+
+Correlation is lower than 0.5  suggesting variables are correlated but not very strong.
+
+Now I'm interested in comparing price per square foot vs. total sqare feet, may be there is a difference in price for small or lage properties.
+
+```{r echo=FALSE}
+ggplot(sales, aes(total.square.feet, price.square.foot)) + 
+  geom_point(alpha = 1/20) + 
+  scale_x_continuous(limits = c(1,10000)) +
+  scale_y_continuous(limits = c(1,1000)) + 
+  geom_smooth()
+```
+
+Plot sows a lot of variance in price but no obvious increase or decrease.
+
+let's look at price per foot vs  year.built
+
+```{r echo=FALSE}
+ggplot(sales, aes(year.built, price.square.foot)) + 
+  geom_point(alpha = 1/20)  
+```
+
+```{r echo=FALSE}
+ggplot(sales, aes(year.built, price.square.foot)) + 
+  geom_jitter(alpha = 1/30, width = 1) + 
+  scale_x_continuous(limits = c(1895,2016), breaks = seq(1890,2020,20)) + 
+  scale_y_continuous(limits = c(1,2000))
+```
+
+I can see more variance in prices for housed built in 1899-1931 and 2000-2015 years but I'm not sure of changes in mean prices so I want to cut years by decades and make a boxplot.
+
+```{r echo=FALSE}
+sales$year.built.bucket <- cut(sales$year.built, breaks = seq(1890,2020,10), dig.lab = 4)
+```
+
+```{r echo=FALSE}
+ggplot(subset(sales,price.square.foot > 0), aes( year.built.bucket,price.square.foot)) + 
+  geom_boxplot() + 
+  scale_y_continuous(limits = c(0,2000))
+```
+
+There are small differences in median price for different decades. On average properties that were built in the beginnig of this and last century cost more then those built in the middle of last century.
+
+Obviously, a lot of difference in price per square foot is explaned by location:
+
+```{r echo=FALSE,fig.height=8}
+ggplot(sales, aes(neighborhood, price.square.foot)) + 
+  geom_boxplot() + 
+  scale_y_continuous(limits = c(1,2500)) + 
+  coord_flip()
+```
+
+Also we can see a lot of difference in sale prices  per unit
+
+```{r echo=FALSE,fig.height=8}
+ggplot(sales, aes(neighborhood, sale.price/(total.units * 1000))) + 
+  geom_boxplot() + 
+  scale_y_continuous(limits = c(1,5000)) + 
+  coord_flip()
+```
+
+Next I want to look at distribution of floor area across neighborhoods:
+
+```{r echo=FALSE,fig.height=8}
+ggplot(sales, aes(neighborhood, gross.square.feet)) + 
+  geom_boxplot() + 
+  scale_y_continuous(limits = c(1,20000)) + 
+  coord_flip()
+```
+
+For example, properties that are sold  in Downtown - Fulton mall area are on average large than in Windsor Terrace. But if I look at area per unit  differences are not so large: 
+
+```{r echo=FALSE,fig.height=8}
+ggplot(sales, aes(neighborhood, gross.square.feet/total.units)) + 
+  geom_boxplot() + 
+  scale_y_continuous(limits = c(1,20000)) + 
+  coord_flip()
+```
+
+Now I want to look at for distribution of prices for different tax classes:
+
+```{r echo=FALSE}
+ggplot(sales, aes(tax.class.at.present, sale.price/1000)) + 
+  geom_boxplot() + 
+  scale_y_continuous(limits = c(1,5000))
+```
+
+Next - prices per square foot:
+
+```{r echo=FALSE}
+ggplot(sales, aes(price.square.foot)) + geom_density(aes(color = tax.class.at.present)) + 
+  scale_x_continuous(limits = c(0.001,2000)) + scale_color_brewer(palette = "Dark2")
+```
+
+Distribution for class 2C looks rather different from others
+
+```{r echo=FALSE}
+ggplot(sales, aes(tax.class.at.present, price.square.foot)) + 
+  geom_boxplot() + 
+  scale_y_continuous(limits = c(1,5000))
+```
+
+Median price for class 2C is conciderably higher then others.
+
+Tax class vs. Neighborhood
+
+```{r echo=FALSE, fig.height=8}
+ggplot(sales, aes(neighborhood) ) + geom_bar(aes(fill= tax.class.at.time.of.sale), position = "dodge") + 
+  coord_flip() + scale_fill_brewer(palette = "Set1")
+```
+
+Most small residential properties (class 1) were sold in Bedford-Stuyvesant, condos (class 2) - in Park Slope, commercial (class 4) - in Bedford-Stuyvesant and Williamsburg-North. Next I want to look at proportions of different tax classes.
+
+
+```{r echo=FALSE, fig.height=8}
+ggplot(sales, aes(neighborhood) ) +
+  geom_bar(aes(fill= tax.class.at.time.of.sale), position = "fill") + 
+  coord_flip() +
+  scale_fill_brewer(palette = 'Set1')
+```
+
+Building category vs. price per foot
+
+```{r echo=FALSE, fig.height=8}
+ggplot(sales, aes(building.class.category, price.square.foot)) +
+  geom_boxplot() + 
+  coord_flip() + 
+  scale_y_continuous(limits = c(1,1000))
+```
+
+There ise some difference in median prices for diffferent building classes. For example indoor public and cultural facilities cost per foot more then educational facilities
+
+Sale price vs. sale date
+
+```{r echo=FALSE}
+ggplot(sales, aes(sale.date, sale.price/1000)) + geom_point(alpha = 1/5) +
+  scale_x_date(date_breaks = '1 month') + scale_y_continuous(limits = c(0,50000))
+```
+
+Among big sales there are stripes aroun specific dates like 2015.03.01 or 2015.06.30.
+
+```{r echo=FALSE}
+ggplot(sales, aes(sale.date, sale.price/1000)) + 
+  geom_point(alpha = 1/20) + 
+  geom_line(color = 'red',stat = "summary", fun.y = mean) + 
+  scale_x_date(date_breaks = '1 month') + scale_y_continuous(limits = c(1,10000))
+```
+
+Red line shows mean price for every day of year.
+
+# Bivariate Analysis
+
+### Talk about some of the relationships you observed in this part of the investigation. How did the feature(s) of interest vary with other features in the dataset?
+
+### Did you observe any interesting relationships between the other features (not the main feature(s) of interest)?
+
+### What was the strongest relationship you found?
+
+
+
+
+# Multivariate Plots Section
+
+```{r echo=FALSE, Multivariate_Plots}
+
+```
+
+# Multivariate Analysis
+
+### Talk about some of the relationships you observed in this part of the investigation. Were there features that strengthened each other in terms of looking at your feature(s) of interest?
+
+### Were there any interesting or surprising interactions between features?
+
+### OPTIONAL: Did you create any models with your dataset? Discuss the strengths and limitations of your model.
+
+------
+
+# Final Plots and Summary
+
+### Plot One
+```{r echo=FALSE, Plot_One}
+
+```
+
+### Description One
+
+
+### Plot Two
+```{r echo=FALSE, Plot_Two}
+
+```
+
+### Description Two
+
+
+### Plot Three
+```{r echo=FALSE, Plot_Three}
+
+```
+
+### Description Three
+
+------
+
+# Reflection
