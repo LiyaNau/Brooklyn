@@ -753,7 +753,7 @@ ggplot(sales, aes(sale.date, price.square.foot)) + geom_point(alpha = 1/5) +
 ```
 
 There is a slight increase to the end of year.
-
+test
 # Bivariate Analysis
 
 ### Talk about some of the relationships you observed in this part of the investigation. How did the feature(s) of interest vary with other features in the dataset?
