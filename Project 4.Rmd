@@ -743,6 +743,7 @@ ggplot(sales, aes(sale.date, sale.price/1000)) +
 ```
 
 Red line shows mean price for every day of year.
+Now I want to look how price per foot changes with time
 
 ```{r echo=FALSE}
 ggplot(sales, aes(sale.date, price.square.foot)) + geom_point(alpha = 1/5) +
@@ -750,6 +751,8 @@ ggplot(sales, aes(sale.date, price.square.foot)) + geom_point(alpha = 1/5) +
   scale_y_continuous(limits = c(1,1000)) +
   geom_smooth(method = 'gam')
 ```
+
+There is a slight increase to the end of year.
 
 # Bivariate Analysis
 
