@@ -535,7 +535,7 @@ ggplot(sales, aes(gross.square.feet, sale.price/1000)) +
 
 Filter out zero values and zoom in:
 
-```{r echo=FALSE}
+```{r echo=FALSE,warning=FALSE}
 ggplot(sales, aes(gross.square.feet, sale.price/1000)) +
   geom_point(alpha = 0.1) +
   scale_x_continuous(limits = c(1, 10000)) + 
@@ -544,7 +544,14 @@ ggplot(sales, aes(gross.square.feet, sale.price/1000)) +
 
 ```
 
-Here we can see some wertical bands for round numbers and a horizontal stripe around 1000000 and also a lot of variance in price for the same square feet.
+Here we can see some vertical bands for round numbers and a horizontal stripe around $1000000 and also a lot of variance in price for the same square feet. Smothing layer shows that at average larger properties cost more. I want to calculate the correlation coeffitient:
+
+```{r echo=FALSE,warning=FALSE}
+cor = cor.test(sales$sale.price, sales$gross.square.feet)
+cor$estimate
+```
+
+There is positive correlation, but not very strong.
 
 Now I want to make the same for land :
 
@@ -733,7 +740,7 @@ ggplot(sales, aes(sale.date, sale.price/1000)) + geom_point(alpha = 1/5) +
   scale_x_date(date_breaks = '1 month') + scale_y_continuous(limits = c(0,50000))
 ```
 
-Among big sales there are stripes aroun specific dates like 2015.03.01 or 2015.06.30.
+Among big sales there are stripes around specific dates like 2015.03.01 or 2015.06.30.
 
 ```{r echo=FALSE}
 ggplot(sales, aes(sale.date, sale.price/1000)) + 
@@ -753,7 +760,7 @@ ggplot(sales, aes(sale.date, price.square.foot)) + geom_point(alpha = 1/5) +
 ```
 
 There is a slight increase to the end of year.
-test
+
 # Bivariate Analysis
 
 ### Talk about some of the relationships you observed in this part of the investigation. How did the feature(s) of interest vary with other features in the dataset?
