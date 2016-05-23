@@ -578,10 +578,11 @@ cor = cor.test(sales$sale.price, sales$land.square.feet)
 cor$estimate
 ```
 
-There is low positive correlation. 
+There is low positive correlation.
+
 ### Price vs. total square feet
 
-```{r echo=FALSE}
+```{r echo=FALSE,warning=FALSE}
 ggplot(sales, aes(total.square.feet, sale.price/1000)) +
   geom_point(alpha = 0.1) +
   scale_x_continuous(limits = c(0, 50000)) + 
@@ -592,7 +593,7 @@ ggplot(sales, aes(total.square.feet, sale.price/1000)) +
 
 Now I filter out zero values and add linear regression line:
 
-```{r echo=FALSE}
+```{r echo=FALSE,warning=FALSE}
 ggplot(sales, aes(total.square.feet, sale.price/1000)) +
   geom_point(alpha = 0.1) +
   scale_x_continuous(limits = c(1, 10000)) + 
@@ -604,16 +605,18 @@ As expected larger properties at average cost more, but there are also a lot of 
 
 Corellation coefficient for total square feet and price:
 
-```{r echo=FALSE}
+```{r echo=FALSE,warning=FALSE}
 cor = cor.test(sales$sale.price, sales$total.square.feet)
 cor$estimate
 ```
 
-Correlation is lower than 0.5  suggesting variables are correlated but not very strong.
+Correlation is lower than 0.5  suggesting that variables are correlated but not very strong.
 
-Now I'm interested in comparing price per square foot vs. total sqare feet, may be there is a difference in price for small or lage properties.
+### Price per square foot vs. total square feet
 
-```{r echo=FALSE}
+Now I'm interested in comparing price per square foot vs. total sqare feet, may be there is a difference in price for small or large properties.
+
+```{r echo=FALSE,warning=FALSE}
 ggplot(sales, aes(total.square.feet, price.square.foot)) + 
   geom_point(alpha = 1/20) + 
   scale_x_continuous(limits = c(1,10000)) +
@@ -621,7 +624,7 @@ ggplot(sales, aes(total.square.feet, price.square.foot)) +
   geom_smooth()
 ```
 
-Plot sows a lot of variance in price but no obvious increase or decrease.
+Plot shows a lot of variance in price but no obvious increase or decrease.
 
 let's look at price per foot vs  year.built
 
@@ -771,6 +774,8 @@ There is a slight increase to the end of year.
 # Bivariate Analysis
 
 ### Talk about some of the relationships you observed in this part of the investigation. How did the feature(s) of interest vary with other features in the dataset?
+
+There is positive correlation between price and gross and land square feet, obviously larger properties cost more, but it is not so stront to explaine all the variance in price.
 
 ### Did you observe any interesting relationships between the other features (not the main feature(s) of interest)?
 
