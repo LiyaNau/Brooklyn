@@ -626,33 +626,33 @@ ggplot(sales, aes(total.square.feet, price.square.foot)) +
 
 Plot shows a lot of variance in price but no obvious increase or decrease.
 
-let's look at price per foot vs  year.built
+### Price per foot vs  year.built
 
-```{r echo=FALSE}
+```{r echo=FALSE,warning=FALSE}
 ggplot(sales, aes(year.built, price.square.foot)) + 
   geom_point(alpha = 1/20)  
 ```
 
-```{r echo=FALSE}
+```{r echo=FALSE,warning=FALSE}
 ggplot(sales, aes(year.built, price.square.foot)) + 
   geom_jitter(alpha = 1/30, width = 1) + 
   scale_x_continuous(limits = c(1895,2016), breaks = seq(1890,2020,20)) + 
   scale_y_continuous(limits = c(1,2000))
 ```
 
-I can see more variance in prices for housed built in 1899-1931 and 2000-2015 years but I'm not sure of changes in mean prices so I want to cut years by decades and make a boxplot.
+I can see more variance in prices for housed built in years 1899-1931 and 2000-2015 y but I'm not sure about changes in mean prices so I want to cut years by decades and make a boxplot.
 
 ```{r echo=FALSE}
 sales$year.built.bucket <- cut(sales$year.built, breaks = seq(1890,2020,10), dig.lab = 4)
 ```
 
-```{r echo=FALSE}
+```{r echo=FALSE,warning=FALSE}
 ggplot(subset(sales,price.square.foot > 0), aes( year.built.bucket,price.square.foot)) + 
   geom_boxplot() + 
   scale_y_continuous(limits = c(0,2000))
 ```
 
-There are small differences in median price for different decades. On average properties that were built in the beginnig of this and last century cost more then those built in the middle of last century.
+There are small differences in median price for different decades. On average properties that were built in the beginnig of this and last century cost more than those built in the middle of last century.
 
 Obviously, a lot of difference in price per square foot is explaned by location:
 
@@ -775,7 +775,7 @@ There is a slight increase to the end of year.
 
 ### Talk about some of the relationships you observed in this part of the investigation. How did the feature(s) of interest vary with other features in the dataset?
 
-There is positive correlation between price and gross and land square feet, obviously larger properties cost more, but it is not so stront to explaine all the variance in price.
+There is positive correlation between price and gross and land square feet, obviously larger properties cost more, but it is not so stront to explaine all the variance in price. Houses built in the beginning and in the end of last century at average have higher prices per square foot than those built in the middle of the century.
 
 ### Did you observe any interesting relationships between the other features (not the main feature(s) of interest)?
 
