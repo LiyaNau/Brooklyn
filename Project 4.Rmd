@@ -490,7 +490,7 @@ Factor variable with 132 levels. Most frequent:
 sort(table(sales$building.class.at.time.of.sale), decreasing = TRUE)
 ```
 
-### Sale date
+#### Sale date
 I should have sales for whole 2015 year. 
 
 ```{r}
@@ -524,7 +524,7 @@ I've deleted zeros and obvious mistakes from "year.built", for plots I deleted p
 
 
 # Bivariate Plots Section
-### Price and gross square feet
+#### Price and gross square feet
 First I want to plot price vs gross square feet
 ```{r echo=FALSE,warning=FALSE, Bivariate_Plots}
 ggplot(sales, aes(gross.square.feet, sale.price/1000)) +
@@ -553,7 +553,7 @@ cor$estimate
 
 There is positive correlation, but not very strong.
 
-### Price vs. land square feet
+#### Price vs. land square feet
 
 
 ```{r echo=FALSE,warning=FALSE}
@@ -580,7 +580,7 @@ cor$estimate
 
 There is low positive correlation.
 
-### Price vs. total square feet
+#### Price vs. total square feet
 
 ```{r echo=FALSE,warning=FALSE}
 ggplot(sales, aes(total.square.feet, sale.price/1000)) +
@@ -612,7 +612,7 @@ cor$estimate
 
 Correlation is lower than 0.5  suggesting that variables are correlated but not very strong.
 
-### Price per square foot vs. total square feet
+#### Price per square foot vs. total square feet
 
 Now I'm interested in comparing price per square foot vs. total sqare feet, may be there is a difference in price for small or large properties.
 
@@ -626,7 +626,7 @@ ggplot(sales, aes(total.square.feet, price.square.foot)) +
 
 Plot shows a lot of variance in price but no obvious increase or decrease.
 
-### Price per foot vs  year.built
+#### Price per foot vs  year.built
 
 ```{r echo=FALSE,warning=FALSE}
 ggplot(sales, aes(year.built, price.square.foot)) + 
