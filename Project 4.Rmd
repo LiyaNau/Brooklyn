@@ -706,27 +706,35 @@ ggplot(filter(sales,gross.square.feet >0),
   coord_flip(ylim = c(0,10000))
 ```
 
+#### Sale price vs. tax class
+
 Now I want to look at for distribution of prices for different tax classes:
 
-```{r echo=FALSE}
-ggplot(sales, aes(tax.class.at.present, sale.price/1000)) + 
-  geom_boxplot() + 
-  scale_y_continuous(limits = c(1,5000))
+```{r echo=FALSE,warning=FALSE}
+ggplot(filter(sales,sale.price > 0), aes(tax.class.at.present, sale.price/1000)) + 
+  geom_boxplot() +
+  coord_cartesian(ylim = c(0,10000))
 ```
+
+#### Price per square foot vs. tax class
 
 Next - prices per square foot:
 
-```{r echo=FALSE}
-ggplot(sales, aes(price.square.foot)) + geom_density(aes(color = tax.class.at.present)) + 
-  scale_x_continuous(limits = c(0.001,2000)) + scale_color_brewer(palette = "Dark2")
+```{r echo=FALSE, warning=FALSE}
+ggplot(filter(sales,price.square.foot >0), aes(price.square.foot)) + 
+  geom_density(aes(color = tax.class.at.present)) +
+  coord_cartesian(xlim = c(0,2000)) +
+  scale_color_brewer(palette = "Dark2")
 ```
 
 Distribution for class 2C looks rather different from others
 
 ```{r echo=FALSE}
-ggplot(sales, aes(tax.class.at.present, price.square.foot)) + 
-  geom_boxplot() + 
-  scale_y_continuous(limits = c(1,5000))
+ggplot(filter(sales,price.square.foot > 0),
+       aes(tax.class.at.present, price.square.foot)) + 
+  geom_boxplot() +
+  coord_cartesian(ylim = c(0,3000))
+  #scale_y_continuous(limits = c(1,5000))
 ```
 
 Median price for class 2C is conciderably higher then others.
