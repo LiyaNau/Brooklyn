@@ -654,13 +654,17 @@ ggplot(subset(sales,price.square.foot > 0), aes( year.built.bucket,price.square.
 
 There are small differences in median price for different decades. On average properties that were built in the beginnig of this and last century cost more than those built in the middle of last century.
 
+#### Price per square foot vs. neighborhood
+
 Obviously, a lot of difference in price per square foot is explaned by location:
+I want to make a boxplot after filtering out zero prices and zoom on prices lower than $2500
 
 ```{r echo=FALSE,fig.height=8}
-ggplot(sales, aes(neighborhood, price.square.foot)) + 
+ggplot(filter(sales, price.square.foot > 0), aes(neighborhood, price.square.foot)) + 
   geom_boxplot() + 
-  scale_y_continuous(limits = c(1,2500)) + 
-  coord_flip()
+  coord_flip(ylim = c(1,2500)) 
+  #coord_cartesian(ylim = c(1,2500),expand = FALSE )
+  
 ```
 
 Also we can see a lot of difference in sale prices  per unit
@@ -776,6 +780,7 @@ There is a slight increase to the end of year.
 ### Talk about some of the relationships you observed in this part of the investigation. How did the feature(s) of interest vary with other features in the dataset?
 
 There is positive correlation between price and gross and land square feet, obviously larger properties cost more, but it is not so stront to explaine all the variance in price. Houses built in the beginning and in the end of last century at average have higher prices per square foot than those built in the middle of the century.
+Price per square foot varies significantly in diferent neighborhoods.
 
 ### Did you observe any interesting relationships between the other features (not the main feature(s) of interest)?
 
