@@ -656,8 +656,8 @@ There are small differences in median price for different decades. On average pr
 
 #### Price per square foot vs. neighborhood
 
-Obviously, a lot of difference in price per square foot is explaned by location:
-I want to make a boxplot after filtering out zero prices and zoom on prices lower than $2500
+Obviously, a lot of difference in price per square foot is explaned by location.
+I want to make a boxplot after filtering out zero prices and zoom on prices lower than $2500:
 
 ```{r echo=FALSE,fig.height=8}
 ggplot(filter(sales, price.square.foot > 0), aes(neighborhood, price.square.foot)) + 
@@ -667,31 +667,43 @@ ggplot(filter(sales, price.square.foot > 0), aes(neighborhood, price.square.foot
   
 ```
 
+#### Sale price per unit vs. neighborhood
+
 Also we can see a lot of difference in sale prices  per unit
 
-```{r echo=FALSE,fig.height=8}
-ggplot(sales, aes(neighborhood, sale.price/(total.units * 1000))) + 
+```{r echo=FALSE,fig.height=8,warning=FALSE}
+ggplot(filter(sales, sale.price > 0),
+       aes(neighborhood, sale.price/(total.units * 1000))) + 
   geom_boxplot() + 
-  scale_y_continuous(limits = c(1,5000)) + 
-  coord_flip()
+  coord_flip(ylim = c(0,5000))
 ```
+
+#### Gross square feet vs. neighborhood
 
 Next I want to look at distribution of floor area across neighborhoods:
 
-```{r echo=FALSE,fig.height=8}
-ggplot(sales, aes(neighborhood, gross.square.feet)) + 
+```{r echo=FALSE,fig.height=8, warning=FALSE}
+ggplot(filter(sales,gross.square.feet >0), aes(neighborhood, gross.square.feet)) + 
   geom_boxplot() + 
-  scale_y_continuous(limits = c(1,20000)) + 
-  coord_flip()
+  coord_flip(ylim = c(0,30000))
 ```
 
-For example, properties that are sold  in Downtown - Fulton mall area are on average large than in Windsor Terrace. But if I look at area per unit  differences are not so large: 
+For example, properties that are sold  in Downtown - Fulton mall area are on average larger than in Windsor Terrace. But if I look at area per unit,  differences are not so large: 
 
-```{r echo=FALSE,fig.height=8}
-ggplot(sales, aes(neighborhood, gross.square.feet/total.units)) + 
+```{r echo=FALSE,fig.height=8, warning=FALSE}
+ggplot(filter(sales,gross.square.feet >0),
+       aes(neighborhood, gross.square.feet/total.units)) + 
   geom_boxplot() + 
-  scale_y_continuous(limits = c(1,20000)) + 
-  coord_flip()
+  coord_flip(ylim = c(0,30000))
+```
+
+I want to look closer to see difference:
+
+```{r echo=FALSE,fig.height=8, warning=FALSE}
+ggplot(filter(sales,gross.square.feet >0),
+       aes(neighborhood, gross.square.feet/total.units)) + 
+  geom_boxplot() + 
+  coord_flip(ylim = c(0,10000))
 ```
 
 Now I want to look at for distribution of prices for different tax classes:
@@ -780,7 +792,7 @@ There is a slight increase to the end of year.
 ### Talk about some of the relationships you observed in this part of the investigation. How did the feature(s) of interest vary with other features in the dataset?
 
 There is positive correlation between price and gross and land square feet, obviously larger properties cost more, but it is not so stront to explaine all the variance in price. Houses built in the beginning and in the end of last century at average have higher prices per square foot than those built in the middle of the century.
-Price per square foot varies significantly in diferent neighborhoods.
+Price per square foot varies significantly in different neighborhoods.
 
 ### Did you observe any interesting relationships between the other features (not the main feature(s) of interest)?
 
