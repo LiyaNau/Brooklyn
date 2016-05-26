@@ -818,11 +818,46 @@ Sale price positively corellates with floor and land area, also price is strongl
 
 # Multivariate Plots Section
 
+#### Price, floor area & tax class
+
+```{r echo=FALSE,warning=FALSE}
+ggplot(sales, aes(gross.square.feet, sale.price/1000,
+                  color = tax.class.at.time.of.sale)) +
+  geom_point(alpha = 0.3) +
+  scale_x_continuous(limits = c(1, 10000)) + 
+  scale_y_continuous(limits = c(1, 10000)) 
+```
+
+Tax class 1 points are mostly situated in lower left corner, class 2 in lower middle and class 3 are disperced around.
+Now I,m interested in floor area distribution of different tax classes: 
+
+```{r echo=FALSE,warning=FALSE}
+ggplot(filter(sales,gross.square.feet > 0), aes(gross.square.feet)) + 
+  geom_density(aes(color = tax.class.at.time.of.sale)) + 
+  coord_cartesian(xlim = c(1,20000))
+```
+
+Properties larger than 4000 feet are mostly commercial or condo, and most small residentials have area less than 5000 feet.
+
+```{r echo=FALSE,warning=FALSE}
+ggplot(filter(sales,gross.square.feet > 0,sale.price > 0),
+       aes(gross.square.feet/total.units,
+           sale.price/(total.units),
+           color = tax.class.at.time.of.sale)) +
+  geom_point(alpha = 0.5) +
+  scale_y_log10() +
+  scale_x_log10() +
+  scale_color_brewer(palette = 'Set2')
+  #scale_y_continuous(limits = c(1, 5000)) 
+  #scale_x_continuous(limits = c(1, 5000)) + 
+```
+
 ```{r echo=FALSE, Multivariate_Plots}
 
 ```
 
 # Multivariate Analysis
+
 
 ### Talk about some of the relationships you observed in this part of the investigation. Were there features that strengthened each other in terms of looking at your feature(s) of interest?
 
