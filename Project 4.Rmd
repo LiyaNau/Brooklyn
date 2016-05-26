@@ -855,6 +855,20 @@ ggplot(filter(sales,gross.square.feet > 0,sale.price > 0),
 
 First I noticed a group of point with prices lower than $1000, this looks strange to me, maybe these are mistakes. 
 Looks like units of class 2 at average are cheaper and smaller than class 1 and units of class 4 are larger and more expensive.
+I wonder does price rise at the same rate as floor area or maybe in large properties one square foot cost less?
+I plotted price for square foot against floor area for unit in log scale:
+
+```{r echo=FALSE,warning=FALSE}
+ggplot(filter(sales,gross.square.feet > 0,price.square.foot > 10),
+       aes(gross.square.feet/total.units,
+           price.square.foot)) +
+  geom_point(aes(color = tax.class.at.time.of.sale),alpha = 0.3) +
+  scale_y_log10() +
+  scale_x_log10() +
+  scale_color_brewer(palette = 'Set2') +
+  geom_smooth(aes(color = tax.class.at.time.of.sale), se = FALSE)
+```
+
 
 ```{r echo=FALSE, Multivariate_Plots}
 
