@@ -853,7 +853,7 @@ ggplot(filter(sales,gross.square.feet > 0,sale.price > 0),
   geom_smooth()
 ```
 
-First I noticed a group of point with prices lower than $1000, this looks strange to me, maybe these are mistakes. 
+First I noticed a group of points with prices lower than $1000, this looks strange to me, maybe these are mistakes. 
 Looks like units of class 2 at average are cheaper and smaller than class 1 and units of class 4 are larger and more expensive.
 I wonder does price rise at the same rate as floor area or maybe in large properties one square foot cost less?
 I plotted price for square foot against floor area for unit in log scale:
@@ -868,6 +868,25 @@ ggplot(filter(sales,gross.square.feet > 0,price.square.foot > 10),
   scale_color_brewer(palette = 'Set2') +
   geom_smooth(aes(color = tax.class.at.time.of.sale), se = FALSE)
 ```
+
+There is some evidence of downward trend for tax class 2 and bigger commercial properties.
+
+#### Price, floor area and year built
+
+Now I'm interested if price and square footage depends on the year.
+
+```{r echo=FALSE,warning=FALSE}
+ggplot(filter(sales,gross.square.feet > 0,sale.price > 1000, year.built >0),
+       aes(gross.square.feet/total.units,
+           sale.price/total.units)) +
+  geom_point(aes(color = year.built),
+             alpha = 0.3) +
+  scale_y_log10() +
+  scale_colour_gradientn(colours = heat.colors(14)) +
+  coord_cartesian(xlim = c(10,3000), ylim = c(1000,10000000))
+```
+
+Looks like newer buildigs are slightly cheaper.
 
 
 ```{r echo=FALSE, Multivariate_Plots}
