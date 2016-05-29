@@ -886,12 +886,18 @@ ggplot(filter(sales,gross.square.feet > 0,sale.price > 1000, year.built >0),
   coord_cartesian(xlim = c(10,3000), ylim = c(1000,10000000))
 ```
 
-Looks like newer buildigs are slightly cheaper.
+Looks like newer buildigs are slightly cheaper. 
 
+#### Price per unit, tax class , year built
 
 ```{r echo=FALSE, Multivariate_Plots}
-
+ggplot(filter(sales, sale.price >1000),
+       aes(year.built.bucket,sale.price/total.units)) +
+  geom_jitter(aes(color = tax.class.at.time.of.sale), width = 0.9, alpha = 0.2) +
+  scale_y_log10()
 ```
+
+
 
 # Multivariate Analysis
 
