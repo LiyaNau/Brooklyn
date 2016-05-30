@@ -890,14 +890,40 @@ Looks like newer buildigs are slightly cheaper.
 
 #### Price per unit, tax class , year built
 
-```{r echo=FALSE, Multivariate_Plots}
+```{r echo=FALSE,warning=FALSE, Multivariate_Plots}
 ggplot(filter(sales, sale.price >1000),
        aes(year.built.bucket,sale.price/total.units)) +
   geom_jitter(aes(color = tax.class.at.time.of.sale), width = 0.9, alpha = 0.2) +
   scale_y_log10()
 ```
 
-Here I can notice that among the properties built in the beginning of the last century commercial (class 4) properties have higher prices than small residential (class 1) and condos (class 2). On the other hand, commercial properties built in 21st century mostly cosl less than residential and condos. 
+Here I can notice that among the properties built in the beginning of the last century commercial (class 4) properties have higher prices than small residential (class 1) and condos (class 2). On the other hand, commercial properties built in 21st century mostly cost less than residential and condos. 
+
+#### Price per square foot, tax class , year built
+
+```{r echo=FALSE,warning=FALSE}
+ggplot(filter(sales, price.square.foot >0),
+       aes(year.built.bucket,price.square.foot)) +
+  geom_jitter(aes(color = tax.class.at.time.of.sale), width = 0.9, alpha = 0.2) +
+  coord_cartesian(ylim = c(0,2000))
+```
+
+If I look at price per square foot I see no obvious pattern.
+
+#### Price, tax class and neighborhood
+
+Now I' m interested in distribution of prices for unit across neighborhoods clored by tax class.
+
+```{r echo=FALSE,warning=FALSE,fig.height=8}
+ggplot(filter(sales, sale.price > 1000),
+       aes(sale.price/(total.units*1000),neighborhood)) +
+  geom_jitter(aes(color = tax.class.at.time.of.sale),
+              height = 0.9, alpha = 1, shape = ".") + 
+  #scale_x_log10()
+  coord_cartesian(xlim = c(0,5000))
+```
+
+Here we can see that distribution varies significantly in different neighborhoods, for example, I notice clusters of lower price class 4 points in Bedford Stuyvesant and Williamsbourg and more expencive class 2 properties in the same Williamsbourg.
 
 # Multivariate Analysis
 
