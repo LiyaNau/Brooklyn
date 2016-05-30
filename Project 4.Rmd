@@ -945,12 +945,19 @@ Among the properties built in the beginning of the last century commercial (clas
 # Final Plots and Summary
 
 ### Plot One
-```{r echo=FALSE, Plot_One}
 
+```{r echo=FALSE,warning=FALSE, Plot_one}
+
+ggplot(sales, aes(x = sale.price/1000)) + 
+  geom_histogram(bins = 200, fill = 'darkblue') +
+  scale_x_log10(breaks = c(1,10,100,1000,10000)) +
+  labs(x = "Sale price in $1000",y = "Number of sales",
+       title = "Distribution of sale prices on log scale")
 ```
 
 ### Description One
 
+On the log scale distribution looks almost normal with exeption of outliers lower than $1000. Most data are spread between $100 000 and $ 10 000 000 with the mode around $1 000 000. It is interesting that there are a lot more sales just below $1 mln than at $1 mln. I can suppose this is kind of psycological number or it is connected with tax regulations.
 
 ### Plot Two
 ```{r echo=FALSE, Plot_Two}
