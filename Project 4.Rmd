@@ -897,7 +897,7 @@ ggplot(filter(sales, sale.price >1000),
   scale_y_log10()
 ```
 
-
+Here I can notice that among the properties built in the beginning of the last century commercial (class 4) properties have higher prices than small residential (class 1) and condos (class 2). On the other hand, commercial properties built in 21st century mostly cosl less than residential and condos. 
 
 # Multivariate Analysis
 
