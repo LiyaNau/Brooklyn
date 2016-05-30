@@ -927,10 +927,16 @@ Here we can see that distribution varies significantly in different neighborhood
 
 # Multivariate Analysis
 
-
 ### Talk about some of the relationships you observed in this part of the investigation. Were there features that strengthened each other in terms of looking at your feature(s) of interest?
 
+I noticed a group of points with prices lower than $1000, this looks strange to me, maybe these are mistakes. 
+Looks like units of class 2 at average are cheaper and smaller than class 1 and units of class 4 are larger and more expensive.
+Properties larger than 4000 feet are mostly commercial or condo, and most small residentials have area less than 5000 feet.
+Price distribution varies significantly in different neighborhoods, for example, I notice clusters of lower price class 4 points in Bedford Stuyvesant and Williamsbourg and more expencive class 2 properties in the same Williamsbourg.
+
 ### Were there any interesting or surprising interactions between features?
+
+Among the properties built in the beginning of the last century commercial (class 4) properties have higher prices than small residential (class 1) and condos (class 2). On the other hand, commercial properties built in 21st century mostly cost less than residential and condos.
 
 ### OPTIONAL: Did you create any models with your dataset? Discuss the strengths and limitations of your model.
 
