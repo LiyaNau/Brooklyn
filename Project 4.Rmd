@@ -975,11 +975,26 @@ ggplot(filter(sales, sale.price > 0),
 Plot shows, as expected, that a lot of variance in sale prices depends on location
 
 ### Plot Three
-```{r echo=FALSE, Plot_Three}
 
+```{r echo=FALSE,warning=FALSE}
+ggplot(filter(sales,gross.square.feet > 0,sale.price > 0),
+       aes(gross.square.feet/total.units,
+           sale.price/total.units)) +
+  geom_point(aes(color = tax.class.at.time.of.sale),alpha = 0.3) +
+  scale_y_log10() +
+  scale_x_log10(minor_breaks = seq(0,1000000,10000),
+                breaks = c(1000,10000,100000)) +
+  scale_color_brewer(palette = 'Set2') +
+  geom_smooth() +
+  labs(title = "Relationship between floor area and price of one unit",
+       x = "Gross square feet ",
+       y = "Sale price, $",
+       color = "Tax class")
 ```
 
 ### Description Three
+
+This plot shows the relationship between unit sale price and floor area in different tax classes. Here we can see that properties of class 2 (condominiums and coops) mostly have area less than 1000 square feet and cost less than $1 mln. Commercial properties (class 4) are at average larger and cost more than $1 mln. Smooth layer shows that at general price goes up  with increase in size, but we have a lot of variance due to other variables.
 
 ------
 
