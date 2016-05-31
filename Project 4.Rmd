@@ -957,22 +957,24 @@ ggplot(sales, aes(x = sale.price/1000)) +
 
 ### Description One
 
-On the log scale distribution looks almost normal with exeption of outliers lower than $1000. Most data are spread between $100 000 and $ 10 000 000 with the mode around $1 000 000. It is interesting that there are a lot more sales just below $1 mln than at $1 mln. I can suppose this is kind of psycological number or it is connected with tax regulations.
+On the log scale distribution looks almost normal with exeption of outliers lower than $1000. Most data are spread between $100 000 and $ 10 000 000 with the mode around $1 000 000. It is interesting that there are a lot more sales just below $1 mln than at $1 mln. I can suppose this is kind of a psycological number or it is connected with tax regulations.
 
 ### Plot Two
 
-```{r echo=FALSE,fig.height=8,warning=FALSE}
-ggplot(filter(sales, sale.price > 0),
-       aes(neighborhood, sale.price/(total.units * 1000))) + 
-  geom_boxplot() + 
-  coord_flip(ylim = c(0,10000)) +
-  scale_x_discrete(limits = rev(levels(sales$neighborhood))) +
-  labs(x = "Neighborhoods", y = "Sale price for unite in thousands, $",
-       title = "Distribution of sale price across neighborhoods")
+```{r echo=FALSE, warning=FALSE}
+ggplot(filter(sales,price.square.foot >0), aes(price.square.foot)) + 
+  geom_density(aes(color = tax.class.at.present),adjust = 2) +
+  coord_cartesian(xlim = c(0,3000)) +
+  scale_color_brewer(palette = "Dark2") +
+  labs(title = "Density function of price for square foot",
+       x = "Price per square foot, $",
+       y = "Density",
+       color = "Tax class")
 ```
 
 ### Description Two
-Plot shows, as expected, that a lot of variance in sale prices depends on location
+
+This plot indicates that price for tax class 2C has different distribution - higher mean and variance, and all distribution are skewed and have very long right tale.
 
 ### Plot Three
 
