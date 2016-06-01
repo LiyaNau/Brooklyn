@@ -1,3 +1,6 @@
+---
+output: html_document
+---
 Brooklyn real estate sales analysis by Liya Naumova
 ========================================================
 
@@ -1001,3 +1004,9 @@ This plot shows the relationship between unit sale price and floor area in diffe
 ------
 
 # Reflection
+
+This dataset contains information about c. 23000 real estates sold in Brooklyn, NY in 2015, described by 21 variables. Analysing individual variables I've found that main features of interest (sale price, gross square feet, land square feet) have significant proportion of missing values. Some categorical values had more than 20 levels and it made visualisation more difficult. As expected, I found that price and size variables have distributions with very long right tale which made me use log transformation.
+
+After that I explored relationships between price and floor area, neghborhood, building year and tax class. Obviously price is positively correlated with floor area but a lot of variance depends on location. I'm interested in further exploration of reasons behind relationships between price and year built and price and tax class.
+
+Also it would be interesting to build a model for price prediction and find some methods for imputation of missing data. As real estate prices change with time it will be in my opinion the main limitaion to use of the model built on this data.
