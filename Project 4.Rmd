@@ -295,7 +295,7 @@ It's distribution:
 ```{r echo=FALSE}
 ggplot(sales, aes(year.built)) +
   geom_histogram(binwidth = 5) + 
-  scale_x_continuous(limits = c(1800,2020), breaks = seq(1800,2020,10))
+  scale_x_continuous(limits = c(1800,2020), breaks = seq(1800,2020,20))
 ```
 
 Most buildings were built between 1895 and 1935 with other peaks in 1950 - 1956 and 2005-2015
@@ -303,7 +303,7 @@ Most buildings were built between 1895 and 1935 with other peaks in 1950 - 1956 
 ```{r echo=FALSE}
 ggplot(sales, aes(year.built)) +
   geom_histogram(binwidth = 1) + 
-  scale_x_continuous(limits = c(1800,2020), breaks = seq(1800,2020,10))
+  scale_x_continuous(limits = c(1800,2020), breaks = seq(1800,2020,20))
 ```
 
 With binwidth = 1 it is possible to notice spikes on round years (1900, 1920...). I assume some of these values are approximate. 
@@ -643,7 +643,8 @@ sales$year.built.bucket <- cut(sales$year.built,
 ggplot(subset(sales,price.square.foot > 0),
        aes( year.built.bucket,price.square.foot)) + 
   geom_boxplot() + 
-  scale_y_continuous(limits = c(0,2000))
+  scale_y_continuous(limits = c(0,2000)) +
+  theme(axis.text.x = element_text(angle=60, hjust=1))
 ```
 
 There are small differences in median price for different decades. On average properties that were built in the beginnig of this and last century cost more than those built in the middle of last century.
@@ -770,7 +771,8 @@ There is some difference in median prices for diffferent building classes. For e
 ggplot(sales, aes(sale.date, sale.price/1000)) +
   geom_point(alpha = 1/5) +
   scale_x_date(date_breaks = '1 month') + 
-  scale_y_continuous(limits = c(0,50000))
+  scale_y_continuous(limits = c(0,50000)) +
+  theme(axis.text.x = element_text(angle=60, hjust=1))
 ```
 
 Among big sales there are stripes around specific dates like 2015.03.01 or 2015.06.30.
@@ -780,7 +782,8 @@ ggplot(sales, aes(sale.date, sale.price/1000)) +
   geom_point(alpha = 1/20) + 
   geom_line(color = 'red',stat = "summary", fun.y = mean) + 
   scale_x_date(date_breaks = '1 month') +
-  scale_y_continuous(limits = c(1,10000))
+  scale_y_continuous(limits = c(1,10000)) +
+  theme(axis.text.x = element_text(angle=60, hjust=1))
 ```
 
 Red line shows mean price for every day of year.
@@ -791,7 +794,8 @@ ggplot(sales, aes(sale.date, price.square.foot)) +
   geom_point(alpha = 1/5) +
   scale_x_date(date_breaks = '1 month') + 
   scale_y_continuous(limits = c(1,1000)) +
-  geom_smooth(method = 'gam')
+  geom_smooth(method = 'gam') +
+  theme(axis.text.x = element_text(angle=60, hjust=1))
 ```
 
 There is a slight increase to the end of year.
@@ -893,7 +897,8 @@ ggplot(filter(sales, sale.price >1000),
        aes(year.built.bucket,sale.price/total.units)) +
   geom_jitter(aes(color = tax.class.at.time.of.sale),
               width = 0.9, alpha = 0.2) +
-  scale_y_log10()
+  scale_y_log10() +
+  theme(axis.text.x = element_text(angle=60, hjust=1))
 ```
 
 Here I can notice that among the properties built in the beginning of the last century commercial (class 4) properties have higher prices than small residential (class 1) and condos (class 2). On the other hand, commercial properties built in 21st century mostly cost less than residential and condos. 
@@ -905,7 +910,8 @@ ggplot(filter(sales, price.square.foot >0),
        aes(year.built.bucket,price.square.foot)) +
   geom_jitter(aes(color = tax.class.at.time.of.sale),
               width = 0.9, alpha = 0.2) +
-  coord_cartesian(ylim = c(0,2000))
+  coord_cartesian(ylim = c(0,2000)) +
+  theme(axis.text.x = element_text(angle=60, hjust=1))
 ```
 
 If I look at price per square foot I see no obvious pattern.
