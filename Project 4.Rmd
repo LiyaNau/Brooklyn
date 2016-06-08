@@ -477,7 +477,9 @@ sort(table(sales$address), decreasing = TRUE)[1:5]
 factor with 39 levels that can represent geographical location of building
 
 ```{r echo=FALSE,fig.height=8}
-ggplot(sales, aes(zip.code)) + geom_bar() + coord_flip()
+ggplot(sales, aes(x= reorder(zip.code,zip.code,function(x) length(x)))) +
+  geom_bar() + coord_flip() +
+  labs(x = "zip code")
 ```
 
 #### Tax class at time of sale
@@ -504,7 +506,15 @@ ggplot(sales, aes(sale.date)) + geom_histogram(binwidth = 1)
 
 ```
 
-Obviously most sales are made on week days with spike on June, 30 and decline to the end of year.
+```{r echo=FALSE}
+ggplot(sales, aes(sale.date)) +
+  geom_histogram(binwidth =7) +
+  scale_x_date(date_breaks = '1 month') +
+  theme(axis.text.x = element_text(angle=60, hjust=1))
+
+```
+
+Obviously most sales are made on week days with spike on June, 30 and a decline to the end of year.
 
 # Univariate Analysis
 
@@ -669,8 +679,6 @@ ggplot(filter(sales, price.square.foot > 0),
        aes(neighborhood, price.square.foot)) + 
   geom_boxplot() + 
   coord_flip(ylim = c(1,2500)) 
-  #coord_cartesian(ylim = c(1,2500),expand = FALSE )
-  
 ```
 
 #### Sale price per unit vs. neighborhood
