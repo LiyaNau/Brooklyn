@@ -411,7 +411,9 @@ ggplot(sales, aes(x = reorder(building.class.category,
                               building.class.category,
                               function(x) length(x)))) + 
   geom_bar() +
-  coord_flip()
+  coord_flip() +
+  scale_y_log10(breaks = c(10,100,500,1000,5000)) +
+  labs(x= "Building class category")
   
 ```
 
