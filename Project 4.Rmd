@@ -916,22 +916,23 @@ Looks like newer buildigs are slightly cheaper.
 ```{r echo=FALSE,warning=FALSE, Multivariate_Plots}
 ggplot(filter(sales, sale.price >1000),
        aes(year.built.bucket,sale.price/total.units)) +
-  geom_jitter(aes(color = tax.class.at.time.of.sale),
-              width = 0.9, alpha = 0.2) +
+  geom_boxplot(aes(fill = tax.class.at.time.of.sale)) +
   scale_y_log10() +
   theme(axis.text.x = element_text(angle=60, hjust=1))
 ```
+
+
 
 Here I can notice that among the properties built in the beginning of the last century commercial (class 4) properties have higher prices than small residential (class 1) and condos (class 2). On the other hand, commercial properties built in 21st century mostly cost less than residential and condos. 
 
 #### Price per square foot, tax class , year built
 
-```{r echo=FALSE,warning=FALSE}
+
+```{r}
 ggplot(filter(sales, price.square.foot >0),
        aes(year.built.bucket,price.square.foot)) +
-  geom_jitter(aes(color = tax.class.at.time.of.sale),
-              width = 0.9, alpha = 0.2) +
-  coord_cartesian(ylim = c(0,2000)) +
+  geom_boxplot(aes(fill = tax.class.at.time.of.sale) ) +
+  coord_cartesian(ylim = c(0,2000))+
   theme(axis.text.x = element_text(angle=60, hjust=1))
 ```
 
