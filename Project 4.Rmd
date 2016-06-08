@@ -383,11 +383,15 @@ table(sales$borough)
 All observarions of this variable have the same value
 
 #### Neighborhood
+
 Categorical variable with 60 levels
 
 ```{r echo=FALSE,fig.height=8}
-ggplot(sales, aes(neighborhood)) + 
-  geom_bar() + coord_flip()
+ggplot(sales,
+       aes(x= reorder(neighborhood,neighborhood,function(x) length(x)))) + 
+  geom_bar() + coord_flip() +
+  labs(x = "Neighborhood")
+
 ```
 
 I've noticed that neighborhoods have different representation in the dataset. Some of them have small number of observations.
@@ -403,8 +407,12 @@ sort(table(sales$building.class.category), decreasing = TRUE)[1:10]
 ```
 
 ```{r echo=FALSE,fig.height=8}
-ggplot(sales, aes(building.class.category)) + 
-  geom_bar() + coord_flip()
+ggplot(sales, aes(x = reorder(building.class.category,
+                              building.class.category,
+                              function(x) length(x)))) + 
+  geom_bar() +
+  coord_flip()
+  
 ```
 
 Most properties are one-three family dwellings or condos.
