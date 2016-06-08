@@ -988,25 +988,26 @@ On the log scale distribution looks almost normal with exeption of outliers lowe
 
 ### Plot Two
 
-```{r echo=FALSE, warning=FALSE}
-ggplot(filter(sales,price.square.foot >0), aes(price.square.foot)) + 
-  geom_density(aes(color = tax.class.at.present),adjust = 2) +
-  coord_cartesian(xlim = c(0,3000)) +
-  scale_color_brewer(palette = "Dark2") +
-  labs(title = "Density function of price for square foot",
-       x = "Price per square foot, $",
-       y = "Density",
-       color = "Tax class")
+```{r echo=FALSE,warning=FALSE}
+ggplot(filter(sales, sale.price >1000),
+       aes(year.built.bucket,sale.price/total.units)) +
+  geom_boxplot(aes(fill = tax.class.at.time.of.sale)) +
+  scale_y_log10() +
+  theme(axis.text.x = element_text(angle=60, hjust=1)) +
+  labs(title = "Distribution of sale prices by years built (in log scale)",
+       x = 'Year built',
+       y = 'Sale price for unit, $',
+       fill = 'Tax class')
 ```
 
 ### Description Two
 
-This plot indicates that price for tax class 2C has different distribution - higher mean and variance, and all distribution are skewed and have very long right tale.
+On this plot I can notice that among the properties built in the beginning of the last century commercial (class 4) properties have higher prices than small residential (class 1) and condos (class 2). On the other hand, commercial properties built in 21st century mostly cost less than residential and condos. 
 
 ### Plot Three
 
 ```{r echo=FALSE,warning=FALSE}
-ggplot(filter(sales,gross.square.feet > 0,sale.price > 0),
+ggplot(filter(sales,gross.square.feet > 0,sale.price > 5000),
        aes(gross.square.feet/total.units,
            sale.price/total.units)) +
   geom_point(aes(color = tax.class.at.time.of.sale),alpha = 0.3) +
@@ -1014,7 +1015,7 @@ ggplot(filter(sales,gross.square.feet > 0,sale.price > 0),
   scale_x_log10(minor_breaks = seq(0,1000000,10000),
                 breaks = c(1000,10000,100000)) +
   scale_color_brewer(palette = 'Set2') +
-  geom_smooth() +
+  geom_smooth(aes(color = tax.class.at.time.of.sale), se= FALSE) +
   labs(title = "Relationship between floor area and price of one unit",
        x = "Gross square feet ",
        y = "Sale price, $",
