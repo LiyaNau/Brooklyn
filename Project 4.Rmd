@@ -700,7 +700,8 @@ Next I want to look at distribution of floor area across neighborhoods:
 ggplot(filter(sales,gross.square.feet >0),
        aes(neighborhood, gross.square.feet)) + 
   geom_boxplot() + 
-  coord_flip(ylim = c(0,30000))
+  scale_y_log10() +
+  coord_flip()
 ```
 
 For example, properties that are sold  in Downtown - Fulton mall area are on average larger than in Windsor Terrace. But if I look at area per unit,  differences are not so large: 
@@ -846,7 +847,8 @@ ggplot(sales, aes(gross.square.feet, sale.price/1000,
   geom_point(alpha = 0.3) +
   scale_x_continuous(limits = c(1, 10000)) + 
   scale_y_continuous(limits = c(1, 10000)) +
-  scale_color_brewer(palette = 'Set2')
+  scale_color_brewer(palette = 'Set2') +
+  geom_smooth(se = FALSE)
 ```
 
 Tax class 1 points are mostly situated in lower left corner, class 2 in lower middle and class 3 are disperced around.
@@ -865,12 +867,13 @@ Next I divided price and square footage by number of units and used a log scale 
 ```{r echo=FALSE,warning=FALSE}
 ggplot(filter(sales,gross.square.feet > 0,sale.price > 0),
        aes(gross.square.feet/total.units,
-           sale.price/total.units)) +
-  geom_point(aes(color = tax.class.at.time.of.sale),alpha = 0.3) +
+           sale.price/total.units,
+           color = tax.class.at.time.of.sale)) +
+  geom_point(alpha = 0.3) +
   scale_y_log10() +
   scale_x_log10() +
   scale_color_brewer(palette = 'Set2') +
-  geom_smooth()
+  geom_smooth(se = FALSE)
 ```
 
 First I noticed a group of points with prices lower than $1000, this looks strange to me, maybe these are mistakes. 
