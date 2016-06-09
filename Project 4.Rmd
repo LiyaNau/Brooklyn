@@ -58,10 +58,12 @@ sales$address <- trim(sales$address)
 sales$apartment.number <- trim(sales$apartment.number)
 ```
 
-```{r echo=FALSE}
+```{r echo=FALSE, functions}
+#  plots basic histogram
 hist_base <- function(feature,  ...){
   ggplot(sales, aes(feature)) + geom_histogram( ... )
 }
+# plots basic bar chart
 bar_base <- function(feature){
   ggplot(sales, aes(feature)) + geom_bar()
 }
@@ -99,6 +101,7 @@ summary(nonzero_prices$sale.price)
 Now I'm interested in those $1 properties
 
 ```{r echo=FALSE}
+# select properties with 1$ price
 one_dollar_sale <- sales %>%
   filter(sale.price == 1) %>%
   select(building.class.category,address, year.built,
@@ -203,6 +206,7 @@ plot + scale_x_log10()
 I decided to make new variable "total.square.feet" as a sum of "land.square.feet" and "gross.square.feet".
 
 ```{r echo=FALSE}
+# create new feature "total square feet" as sum of land and gross sf
 sales <- mutate(sales, total.square.feet = land.square.feet + gross.square.feet)
 ```
 
@@ -235,6 +239,7 @@ plot + scale_x_continuous(limits = c(1,20000))
 Then I want to make another variable - price per square foot
 
 ```{r echo=FALSE}
+# create new feature "price.square.foot" price divided by total sq.ft
 sales$price.square.foot <- 
    ifelse(sales$total.square.feet > 0,
           round(sales$sale.price / sales$total.square.feet, 2), 0)
@@ -358,6 +363,7 @@ All observarions of this variable have the same value
 Categorical variable with 60 levels
 
 ```{r echo=FALSE,fig.height=8}
+# barplot with bars reordered by count
 ggplot(sales,
        aes(x= reorder(neighborhood,neighborhood,function(x) length(x)))) + 
   geom_bar() + coord_flip() +
@@ -623,6 +629,7 @@ ggplot(sales, aes(year.built, price.square.foot)) +
 I can see more variance in prices for housed built in years 1899-1931 and 2000-2015 y but I'm not sure about changes in mean prices so I want to cut years by decades and make a boxplot.
 
 ```{r echo=FALSE}
+# add new feature "year.built.bucket" - divide years to 10 year buckets
 sales$year.built.bucket <- cut(sales$year.built,
                                breaks = seq(1890,2020,10),
                                dig.lab = 4)
@@ -766,6 +773,7 @@ ggplot(sales, aes(sale.date, sale.price/1000)) +
 Among big sales there are stripes around specific dates like 2015.03.01 or 2015.06.30.
 
 ```{r echo=FALSE,warning=FALSE}
+# added summary statistics to the plot
 ggplot(sales, aes(sale.date, sale.price/1000)) + 
   geom_point(alpha = 1/20) + 
   geom_line(color = 'red',stat = "summary", fun.y = mean) + 
