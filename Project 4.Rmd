@@ -11,7 +11,9 @@ library(openxlsx)
 library(gdata)
 library(dplyr)
 library(stats)
-
+library(gridExtra)
+library(grid)
+library(gtable)
 ```
 
 ```{r global_options,echo=FALSE}
@@ -113,14 +115,23 @@ Other values look normal so I assume it's a kind of fictitious price
 Let's look at histogram with prices divided by 1000
 
 ```{r echo=FALSE}
-hist_base(sales$sale.price/1000, binwidth = 1000)
+#p1 <- hist_base(sales$sale.price/1000, binwidth = 1000)
 ```
 
 So there is a distribution with very long tale.
 Let's look at all prices lower than 5 mln.
 
 ```{r echo=FALSE}
-hist_base(sales$sale.price/1000, binwidth = 50) + xlim(0.001,5000)
+p1 <- hist_base(sales$sale.price/1000, binwidth = 1000)
+p2 <-hist_base(sales$sale.price/1000, binwidth = 50) + xlim(0.001,5000)
+
+g1 <- ggplotGrob(p1)
+g2 <- ggplotGrob(p2)
+
+g = rbind(g1, g2, size="first")
+g$widths = grid::unit.pmax(g1$widths, g2$widths)
+grid::grid.newpage()
+grid::grid.draw(g)
 ```
 
 Most prices are distributed between 1000 and 1 000 000  with peaks around 500 000, 950 000 and 1 250 000, also we have much more prices that are slightly lower then 1 mln than that are slightly higher.
