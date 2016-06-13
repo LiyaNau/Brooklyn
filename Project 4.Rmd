@@ -69,6 +69,17 @@ hist_base <- function(feature,  ...){
 bar_base <- function(feature){
   ggplot(sales, aes(feature)) + geom_bar()
 }
+# arrange 2 plots in grid
+plot_grid <- function(p1, p2){
+  g1 <- ggplotGrob(p1)
+  g2 <- ggplotGrob(p2)
+
+  g = rbind(g1, g2, size="first")
+  g$widths = grid::unit.pmax(g1$widths, g2$widths)
+  grid::grid.newpage()
+  grid::grid.draw(g)
+}
+
 ```
 
 
@@ -112,26 +123,13 @@ head(one_dollar_sale,10)
 ```
 Other values look normal so I assume it's a kind of fictitious price
 
-Let's look at histogram with prices divided by 1000
-
-```{r echo=FALSE}
-#p1 <- hist_base(sales$sale.price/1000, binwidth = 1000)
-```
-
-So there is a distribution with very long tale.
+Let's look at histogram with prices divided by 1000. There is a distribution with very long tale.
 Let's look at all prices lower than 5 mln.
 
 ```{r echo=FALSE}
 p1 <- hist_base(sales$sale.price/1000, binwidth = 1000)
-p2 <-hist_base(sales$sale.price/1000, binwidth = 50) + xlim(0.001,5000)
-
-g1 <- ggplotGrob(p1)
-g2 <- ggplotGrob(p2)
-
-g = rbind(g1, g2, size="first")
-g$widths = grid::unit.pmax(g1$widths, g2$widths)
-grid::grid.newpage()
-grid::grid.draw(g)
+p2 <- hist_base(sales$sale.price/1000, binwidth = 50) + xlim(0.001,5000)
+plot_grid(p1, p2)
 ```
 
 Most prices are distributed between 1000 and 1 000 000  with peaks around 500 000, 950 000 and 1 250 000, also we have much more prices that are slightly lower then 1 mln than that are slightly higher.
@@ -148,7 +146,9 @@ Next feature of interest for me is Gross square feet.
 ```{r echo=FALSE}
 summary(sales$gross.square.feet)
 ```
+
 Looks like here are also lots of zeros. Summary without zeros:
+
 ```{r echo=FALSE}
 summary(subset(sales, gross.square.feet > 0)$gross.square.feet)
 ```
@@ -157,17 +157,15 @@ summary(subset(sales, gross.square.feet > 0)$gross.square.feet)
 Let's look at distribution of values greater than 0
 
 ```{r echo=FALSE}
-hist_base(sales$gross.square.feet, bins = 500) +
+p1 <- hist_base(sales$gross.square.feet, bins = 500) + 
   scale_x_continuous(limits = c(1, 366000))
-```
-
-Here also we have very long tail. I focus on values between 1 and 10000
-
-```{r echo=FALSE}
 plot <-hist_base(sales$gross.square.feet, bins = 100) 
-plot + scale_x_continuous(limits = c(1, 10000), breaks = seq(0,10000,1000))
+p2 <- plot + scale_x_continuous(limits = c(1, 10000), 
+                                breaks = seq(0,10000,1000))
+plot_grid(p1, p2)
 ```
 
+Here also we have very long tail. I focus on values between 1 and 10000.
 Most values are between 1000 and 3500 square feet and peak is around 2000.
 Now I want to look at it after log transformation.
 
@@ -196,14 +194,10 @@ Histogram:
 
 ```{r echo=FALSE}
 plot <-hist_base(sales$land.square.feet, bins = 100)
-plot +  scale_x_continuous(limits = c(1, 25000))
-```
-
-And a closer look to values between 1 and 10000:
-
-```{r echo=FALSE}
-hist_base(sales$land.square.feet, bins = 200) +
+p1 <- plot +  scale_x_continuous(limits = c(1, 25000))
+p2 <- hist_base(sales$land.square.feet, bins = 200) +
   scale_x_continuous(limits = c(1, 10000), breaks = seq(0,10000,1000))
+plot_grid(p1, p2)
 ```
 
 Most values are distributed between 1500 and 3000 with spikes at round numbers (2000, 2500, 3000 ...). The most common value is 2000.
@@ -236,15 +230,13 @@ summary(subset(sales, total.square.feet > 0)$total.square.feet)
 ```
 
 ```{r echo=FALSE}
-plot <- hist_base(sales$total.square.feet, bins = 100)
+p1 <- hist_base(sales$total.square.feet, bins = 100)
+p2 <- p1 + scale_x_continuous(limits = c(1,20000))
+plot_grid(p1, p2)
 ```
  
 Obviously I have here similar distribution with very long tale.
 
-```{r  echo=FALSE}
-plot + scale_x_continuous(limits = c(1,20000))
-``` 
- 
 #### Price per square feet
 
 Then I want to make another variable - price per square foot
@@ -263,18 +255,14 @@ summary(subset(sales, price.square.foot > 0)$price.square.foot)
 
 ```
 
-distribution of :
+distribution:
 
 ```{r echo=FALSE}
-hist_base(sales$price.square.foot, binwidth = 50) +
+p1 <- hist_base(sales$price.square.foot, binwidth = 50) +
   scale_x_continuous(limits = c(0, 12060))
-```
-
-distribution of non-zero values below 2000:
-
-```{r echo=FALSE}
-hist_base(sales$price.square.foot, binwidth = 10) +
+p2 <- hist_base(sales$price.square.foot, binwidth = 10) +
   scale_x_continuous(limits = c(0.01, 2000))
+plot_grid(p1, p2)
 ```
 
 #### Year built
@@ -288,17 +276,14 @@ summary(sales$year.built)
 It's distribution:
 
 ```{r echo=FALSE}
-hist_base(sales$year.built, binwidth = 5) +
+p1 <- hist_base(sales$year.built, binwidth = 5) +
   scale_x_continuous(limits = c(1800,2020), breaks = seq(1800,2020,20))
+p2 <- hist_base(sales$year.built, binwidth = 1) + 
+  scale_x_continuous(limits = c(1800,2020), breaks = seq(1800,2020,20))
+plot_grid(p1, p2)
 ```
 
-Most buildings were built between 1895 and 1935 with other peaks in 1950 - 1956 and 2005-2015
-
-```{r echo=FALSE}
-hist_base(sales$year.built, binwidth = 1) + 
-  scale_x_continuous(limits = c(1800,2020), breaks = seq(1800,2020,20))
-```
-
+Most buildings were built between 1895 and 1935 with other peaks in 1950 - 1956 and 2005-2015.
 With binwidth = 1 it is possible to notice spikes on round years (1900, 1920...). I assume some of these values are approximate. 
 
 #### Residential units
@@ -312,12 +297,9 @@ table(sales$residential.units)
 Histogram:
 
 ```{r echo=FALSE}
-plot <- hist_base(sales$residential.units, binwidth = 1) 
-plot
-```
-
-```{r echo=FALSE}
-plot + scale_x_continuous(limits = c(0,50))
+p1 <- hist_base(sales$residential.units, binwidth = 1)
+p2 <- p1 + scale_x_continuous(limits = c(0,50))
+plot_grid(p1, p2)
 ```
 
 Most properties have from 0 to 5 residential units.
@@ -331,12 +313,9 @@ table(sales$commercial.units)
 Histogram:
 
 ```{r echo=FALSE}
-plot <- hist_base(sales$commercial.units, binwidth = 1)
-plot
-```
-
-```{r echo=FALSE}
-plot + scale_x_continuous(limits = c(0,20))
+p1 <- hist_base(sales$commercial.units, binwidth = 1)
+p2 <- p1 + scale_x_continuous(limits = c(0,20))
+plot_grid(p1, p2)
 ```
 
 Most properties have 0 commercial units.
@@ -350,12 +329,9 @@ table(sales$total.units)
 Histogram:
 
 ```{r echo=FALSE}
-plot <- hist_base(sales$total.units, binwidth = 1)
-plot
-```
-
-```{r echo=FALSE}
-plot + scale_x_continuous(limits = c(0,20))
+p1 <- hist_base(sales$total.units, binwidth = 1)
+p2 <- p1 + scale_x_continuous(limits = c(0,20))
+plot_grid(p1, p2)
 ```
 
 Most properties have between 0 and 5 total units.
@@ -490,14 +466,11 @@ sort(table(sales$building.class.at.time.of.sale), decreasing = TRUE)
 I should have sales for the whole 2015 year. 
 
 ```{r echo=FALSE}
-hist_base(sales$sale.date, binwidth = 1)
-```
-
-```{r echo=FALSE}
-hist_base(sales$sale.date, binwidth = 7) +
+p1 <- hist_base(sales$sale.date, binwidth = 1)
+p2 <- hist_base(sales$sale.date, binwidth = 7) +
   scale_x_date(date_breaks = '1 month') +
   theme(axis.text.x = element_text(angle=60, hjust=1))
-
+plot_grid(p1, p2)
 ```
 
 Obviously most sales are made on week days with spike on June, 30 and a decline to the end of year.
