@@ -865,7 +865,7 @@ There is some evidence of downward trend for tax class 2 and bigger commercial p
 
 Now I'm interested if price and square footage depends on the year.
 
-```{r echo=FALSE,warning=FALSE}
+```{r echo=FALSE,warning=FALSE,fig.height=10,fig.width=10}
 ggplot(filter(sales,gross.square.feet > 0,sale.price > 1000, year.built >0),
        aes(gross.square.feet/total.units,
            sale.price/total.units)) +
