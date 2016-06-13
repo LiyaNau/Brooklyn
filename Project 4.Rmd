@@ -802,14 +802,14 @@ Sale price positively corellates with floor and land area, also price is strongl
 
 #### Price, floor area & tax class
 
-```{r echo=FALSE,warning=FALSE}
-ggplot(sales, aes(gross.square.feet, sale.price/1000,
-                  color = tax.class.at.time.of.sale)) +
-  geom_point(alpha = 0.3) +
+```{r echo=FALSE,warning=FALSE,fig.height=8,fig.width=10}
+ggplot(sales, aes(gross.square.feet, sale.price/1000)) +
+  geom_point(aes(color = tax.class.at.time.of.sale),alpha = 0.3) +
   scale_x_continuous(limits = c(1, 10000)) + 
   scale_y_continuous(limits = c(1, 10000)) +
   scale_color_brewer(palette = 'Set2') +
-  geom_smooth(se = FALSE)
+  facet_wrap(~tax.class.at.time.of.sale) + 
+  geom_smooth(se = TRUE)
 ```
 
 Tax class 1 points are mostly situated in lower left corner, class 2 in lower middle and class 3 are disperced around.
@@ -825,7 +825,7 @@ Properties larger than 4000 feet are mostly commercial or condo, and most small 
 
 Next I divided price and square footage by number of units and used a log scale to see relation beetween price and size of one unit across tax classes.
 
-```{r echo=FALSE,warning=FALSE}
+```{r echo=FALSE,warning=FALSE,fig.height=10, fig.width=10}
 ggplot(filter(sales,gross.square.feet > 0,sale.price > 0),
        aes(gross.square.feet/total.units,
            sale.price/total.units,
@@ -834,6 +834,7 @@ ggplot(filter(sales,gross.square.feet > 0,sale.price > 0),
   scale_y_log10() +
   scale_x_log10() +
   scale_color_brewer(palette = 'Set2') +
+  facet_wrap(~tax.class.at.time.of.sale,nrow =2)+
   geom_smooth(se = FALSE)
 ```
 
@@ -842,7 +843,7 @@ Looks like units of class 2 at average are cheaper and smaller than class 1 and 
 I wonder does price rise at the same rate as floor area or maybe in large properties one square foot cost less?
 I plotted price for square foot against floor area for unit in log scale:
 
-```{r echo=FALSE,warning=FALSE}
+```{r echo=FALSE,warning=FALSE,fig.height=10, fig.width=10}
 ggplot(filter(sales,gross.square.feet > 0,price.square.foot > 10),
        aes(gross.square.feet/total.units,
            price.square.foot)) +
@@ -850,7 +851,8 @@ ggplot(filter(sales,gross.square.feet > 0,price.square.foot > 10),
   scale_y_log10() +
   scale_x_log10() +
   scale_color_brewer(palette = 'Set2') +
-  geom_smooth(aes(color = tax.class.at.time.of.sale), se = FALSE)
+  geom_smooth(aes(color = tax.class.at.time.of.sale), se = FALSE) + 
+  facet_wrap(~tax.class.at.time.of.sale,nrow = 2)
 ```
 
 There is some evidence of downward trend for tax class 2 and bigger commercial properties.
