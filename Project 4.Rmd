@@ -956,8 +956,10 @@ On the log scale distribution looks almost normal with exeption of outliers lowe
 ```{r echo=FALSE,warning=FALSE}
 ggplot(filter(sales, sale.price >1000),
        aes(year.built.bucket,sale.price/total.units)) +
-  geom_boxplot(aes(fill = tax.class.at.time.of.sale)) +
-  scale_y_log10() +
+  geom_boxplot(aes(fill = tax.class.at.time.of.sale),outlier.colour = NA) +
+  scale_y_log10(limits = c(2000,100000000),
+                breaks = c(10000,100000,1000000,10000000),
+                labels = c("10 000",'100 000','1 000 000','10 000 000')) +
   theme(axis.text.x = element_text(angle=60, hjust=1)) +
   labs(title = "Distribution of sale prices by years built (in log scale)",
        x = 'Year built',
