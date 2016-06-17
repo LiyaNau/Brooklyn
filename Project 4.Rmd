@@ -70,12 +70,17 @@ bar_base <- function(feature){
   ggplot(sales, aes(feature)) + geom_bar()
 }
 # arrange 2 plots in grid
-plot_grid <- function(p1, p2){
+plot_grid <- function(p1, p2, dir = "vertical"){
   g1 <- ggplotGrob(p1)
   g2 <- ggplotGrob(p2)
-
-  g = rbind(g1, g2, size="first")
-  g$widths = grid::unit.pmax(g1$widths, g2$widths)
+  
+  if (dir == "vertical") {
+    g = rbind(g1, g2, size="first")
+    g$widths = grid::unit.pmax(g1$widths, g2$widths)
+  } else if (dir == "horizontal") {
+    g = cbind(g1,g2, size = "first")
+    g$heights = grid::unit.pmax(g1$heights, g2$heights)
+  }
   grid::grid.newpage()
   grid::grid.draw(g)
 }
@@ -497,23 +502,20 @@ I've deleted zeros and obvious mistakes from "year.built", for plots I deleted p
 
 # Bivariate Plots Section
 #### Price and gross square feet
-First I want to plot price vs gross square feet
-```{r echo=FALSE,warning=FALSE, Bivariate_Plots}
-ggplot(sales, aes(gross.square.feet, sale.price/1000)) +
+First I want to plot price vs gross square feet, filter out zero values and zoom in:
+```{r echo=FALSE,warning=FALSE,fig.width= 10, Bivariate_Plots}
+p1 <- ggplot(sales, aes(gross.square.feet, sale.price/1000)) +
   geom_point(alpha = 0.1) +
   scale_x_continuous(limits = c(0, 50000)) + 
   scale_y_continuous(limits = c(0, 50000)) 
-```
 
-Filter out zero values and zoom in:
-
-```{r echo=FALSE,warning=FALSE}
-ggplot(sales, aes(gross.square.feet, sale.price/1000)) +
+p2 <-ggplot(sales, aes(gross.square.feet, sale.price/1000)) +
   geom_point(alpha = 0.1) +
   scale_x_continuous(limits = c(1, 10000)) + 
   scale_y_continuous(limits = c(1, 10000)) + 
   geom_smooth()
 
+plot_grid(p1,p2,"horizontal")
 ```
 
 Here we can see some vertical bands for round numbers and a horizontal stripe around $1000000 and also a lot of variance in price for the same square feet. Smothing layer shows that at average larger properties cost more. I want to calculate the correlation coeffitient:
@@ -528,19 +530,16 @@ There is positive correlation, but not very strong.
 #### Price vs. land square feet
 
 
-```{r echo=FALSE,warning=FALSE}
-ggplot(sales, aes(land.square.feet, sale.price/1000)) +
+```{r echo=FALSE,warning=FALSE,fig.width=10}
+p1 <- ggplot(sales, aes(land.square.feet, sale.price/1000)) +
   geom_point(alpha = 0.1) 
 
-```
-
-I delete zero values and look closer 
-
-```{r echo=FALSE,warning=FALSE}
-ggplot(sales, aes(land.square.feet, sale.price/1000)) +
+p2 <-ggplot(sales, aes(land.square.feet, sale.price/1000)) +
   geom_point(alpha = 0.1) +
   scale_x_continuous(limits = c(1, 10000)) + 
   scale_y_continuous(limits = c(1, 10000)) 
+
+plot_grid(p1,p2,"horizontal")
 ```
 
 Here also we can see strong vertical bands and a lot of differences in prices for the same square feet.
@@ -554,23 +553,21 @@ There is low positive correlation.
 
 #### Price vs. total square feet
 
-```{r echo=FALSE,warning=FALSE}
-ggplot(sales, aes(total.square.feet, sale.price/1000)) +
+```{r echo=FALSE,fig.width=10, warning=FALSE}
+p1 <- ggplot(sales, aes(total.square.feet, sale.price/1000)) +
   geom_point(alpha = 0.1) +
   scale_x_continuous(limits = c(0, 50000)) + 
   scale_y_continuous(limits = c(0, 50000)) 
-```
 
-Now I filter out zero values and add linear regression line:
-
-```{r echo=FALSE,warning=FALSE}
-ggplot(sales, aes(total.square.feet, sale.price/1000)) +
+p2 <- ggplot(sales, aes(total.square.feet, sale.price/1000)) +
   geom_point(alpha = 0.1) +
   scale_x_continuous(limits = c(1, 10000)) + 
   scale_y_continuous(limits = c(1, 10000)) + 
   geom_smooth(method = "lm")
-```
 
+plot_grid(p1, p2, "horizontal")
+```
+Now I filter out zero values and add linear regression line.
 As expected larger properties at average cost more, but there are also a lot of variance due to other variables.
 
 Corellation coefficient for total square feet and price:
@@ -598,16 +595,16 @@ Plot shows a lot of variance in price but no obvious increase or decrease.
 
 #### Price per foot vs  year.built
 
-```{r echo=FALSE,warning=FALSE}
-ggplot(sales, aes(year.built, price.square.foot)) + 
+```{r echo=FALSE,warning=FALSE,fig.height=8}
+p1 <-ggplot(sales, aes(year.built, price.square.foot)) + 
   geom_point(alpha = 1/20)  
-```
 
-```{r echo=FALSE,warning=FALSE}
-ggplot(sales, aes(year.built, price.square.foot)) + 
+p2 <- ggplot(sales, aes(year.built, price.square.foot)) + 
   geom_jitter(alpha = 1/30, width = 1) + 
   scale_x_continuous(limits = c(1895,2016), breaks = seq(1890,2020,20)) + 
   scale_y_continuous(limits = c(1,2000))
+
+plot_grid(p1, p2)
 ```
 
 I can see more variance in prices for housed built in years 1899-1931 and 2000-2015 y but I'm not sure about changes in mean prices so I want to cut years by decades and make a boxplot.
