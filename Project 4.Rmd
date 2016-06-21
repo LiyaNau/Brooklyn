@@ -132,8 +132,9 @@ Let's look at histogram with prices divided by 1000. There is a distribution wit
 Let's look at all prices lower than 5 mln.
 
 ```{r echo=FALSE}
-p1 <- hist_base(sales$sale.price/1000, binwidth = 1000)
-p2 <- hist_base(sales$sale.price/1000, binwidth = 50) + xlim(0.001,5000)
+p1 <- hist_base(sales$sale.price/1000, binwidth = 1000) + xlab("sale price")
+p2 <- hist_base(sales$sale.price/1000, binwidth = 50) + xlim(0.001,5000) +
+  xlab("sale price")
 plot_grid(p1, p2)
 ```
 
@@ -141,7 +142,8 @@ Most prices are distributed between 1000 and 1 000 000  with peaks around 500 00
 After log transformation prices look nearly normal but some exceptions that are lower than 1000.
 
 ```{r echo=FALSE, Price}
-hist_base(sales$sale.price/1000,bins = 100) + scale_x_log10()
+hist_base(sales$sale.price/1000,bins = 100) + scale_x_log10() +
+  xlab("sale price")
 ```
 
 #### Gross sqare feet
@@ -163,8 +165,10 @@ Let's look at distribution of values greater than 0
 
 ```{r echo=FALSE}
 p1 <- hist_base(sales$gross.square.feet, bins = 500) + 
-  scale_x_continuous(limits = c(1, 366000))
-plot <-hist_base(sales$gross.square.feet, bins = 100) 
+  scale_x_continuous(limits = c(1, 366000)) +
+  xlab("gross square feet")
+plot <-hist_base(sales$gross.square.feet, bins = 100) + 
+  xlab("gross square feet")
 p2 <- plot + scale_x_continuous(limits = c(1, 10000), 
                                 breaks = seq(0,10000,1000))
 plot_grid(p1, p2)
@@ -198,10 +202,12 @@ summary(subset(sales, land.square.feet > 0)$land.square.feet)
 Histogram:
 
 ```{r echo=FALSE}
-plot <-hist_base(sales$land.square.feet, bins = 100)
+plot <-hist_base(sales$land.square.feet, bins = 100) +
+  xlab("land square feet")
 p1 <- plot +  scale_x_continuous(limits = c(1, 25000))
 p2 <- hist_base(sales$land.square.feet, bins = 200) +
-  scale_x_continuous(limits = c(1, 10000), breaks = seq(0,10000,1000))
+  scale_x_continuous(limits = c(1, 10000), breaks = seq(0,10000,1000)) +
+  xlab("land square feet")
 plot_grid(p1, p2)
 ```
 
@@ -235,7 +241,8 @@ summary(subset(sales, total.square.feet > 0)$total.square.feet)
 ```
 
 ```{r echo=FALSE}
-p1 <- hist_base(sales$total.square.feet, bins = 100)
+p1 <- hist_base(sales$total.square.feet, bins = 100) +
+  xlab("total square feet")
 p2 <- p1 + scale_x_continuous(limits = c(1,20000))
 plot_grid(p1, p2)
 ```
@@ -264,9 +271,11 @@ distribution:
 
 ```{r echo=FALSE}
 p1 <- hist_base(sales$price.square.foot, binwidth = 50) +
-  scale_x_continuous(limits = c(0, 12060))
+  scale_x_continuous(limits = c(0, 12060)) +
+  xlab("price per square foot")
 p2 <- hist_base(sales$price.square.foot, binwidth = 10) +
-  scale_x_continuous(limits = c(0.01, 2000))
+  scale_x_continuous(limits = c(0.01, 2000)) +
+  xlab("price per square foot")
 plot_grid(p1, p2)
 ```
 
@@ -282,9 +291,11 @@ It's distribution:
 
 ```{r echo=FALSE}
 p1 <- hist_base(sales$year.built, binwidth = 5) +
-  scale_x_continuous(limits = c(1800,2020), breaks = seq(1800,2020,20))
+  scale_x_continuous(limits = c(1800,2020), breaks = seq(1800,2020,20)) +
+  xlab("year built")
 p2 <- hist_base(sales$year.built, binwidth = 1) + 
-  scale_x_continuous(limits = c(1800,2020), breaks = seq(1800,2020,20))
+  scale_x_continuous(limits = c(1800,2020), breaks = seq(1800,2020,20)) +
+  xlab("year built")
 plot_grid(p1, p2)
 ```
 
@@ -302,7 +313,8 @@ table(sales$residential.units)
 Histogram:
 
 ```{r echo=FALSE}
-p1 <- hist_base(sales$residential.units, binwidth = 1)
+p1 <- hist_base(sales$residential.units, binwidth = 1) +
+  xlab("residential units")
 p2 <- p1 + scale_x_continuous(limits = c(0,50))
 plot_grid(p1, p2)
 ```
@@ -318,7 +330,8 @@ table(sales$commercial.units)
 Histogram:
 
 ```{r echo=FALSE}
-p1 <- hist_base(sales$commercial.units, binwidth = 1)
+p1 <- hist_base(sales$commercial.units, binwidth = 1) + 
+  xlab("commercial units")
 p2 <- p1 + scale_x_continuous(limits = c(0,20))
 plot_grid(p1, p2)
 ```
@@ -334,7 +347,7 @@ table(sales$total.units)
 Histogram:
 
 ```{r echo=FALSE}
-p1 <- hist_base(sales$total.units, binwidth = 1)
+p1 <- hist_base(sales$total.units, binwidth = 1) + xlab("total units")
 p2 <- p1 + scale_x_continuous(limits = c(0,20))
 plot_grid(p1, p2)
 ```
@@ -471,8 +484,8 @@ sort(table(sales$building.class.at.time.of.sale), decreasing = TRUE)
 I should have sales for the whole 2015 year. 
 
 ```{r echo=FALSE}
-p1 <- hist_base(sales$sale.date, binwidth = 1)
-p2 <- hist_base(sales$sale.date, binwidth = 7) +
+p1 <- hist_base(sales$sale.date, binwidth = 1) + xlab("sale date")
+p2 <- hist_base(sales$sale.date, binwidth = 7) + xlab("sale date") +
   scale_x_date(date_breaks = '1 month') +
   theme(axis.text.x = element_text(angle=60, hjust=1))
 plot_grid(p1, p2)
@@ -890,7 +903,7 @@ Here I can notice that among the properties built in the beginning of the last c
 #### Price per square foot, tax class , year built
 
 
-```{r}
+```{r echo=FALSE,warning=FALSE}
 ggplot(filter(sales, price.square.foot >0),
        aes(year.built.bucket,price.square.foot)) +
   geom_boxplot(aes(fill = tax.class.at.time.of.sale) ) +
